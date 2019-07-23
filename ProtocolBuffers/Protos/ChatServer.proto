@@ -1,0 +1,25 @@
+﻿syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+package ChatServerProto;
+
+
+message ChatMessage
+{
+	int32 userID = 1;
+	string msg = 2;
+	google.protobuf.Timestamp postTime = 3;
+}
+
+message ResponseCode
+{
+	int32 Code = 1;
+}
+
+message GetMessageRequest {};
+
+service ChatServerService
+{
+	rpc PostMessage(ChatMessage) returns (ResponseCode);
+	rpc GetMessages(GetMessageRequest) returns (stream ChatMessage);
+}
