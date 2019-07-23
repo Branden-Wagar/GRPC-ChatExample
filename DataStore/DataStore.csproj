@@ -55,6 +55,10 @@
     <Compile Include="Migrations\20190719165109_initial.designer.cs">
       <DependentUpon>20190719165109_initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20190723190653_TimestampAdded.cs" />
+    <Compile Include="Migrations\20190723190653_TimestampAdded.designer.cs">
+      <DependentUpon>20190723190653_TimestampAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MessageBoardDBContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,7 +1,9 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Prism.Commands;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +44,7 @@ namespace ChatServerClient
             {
                 if (_sendMessageCommand == null)
                 {
-                    _sendMessageCommand = new DelegateCommand(new Action(() => SendMessage()));
+                    _sendMessageCommand = new DelegateCommand(new Action(() =>SendMessageAsync()));
                 }
                 return _sendMessageCommand;
             }
@@ -73,22 +75,28 @@ namespace ChatServerClient
             while (await messageStream.ResponseStream.MoveNext())
             {
                 var current = messageStream.ResponseStream.Current;
-                BoardContent += current.UserID + " : " + current.Msg;
+                BoardContent += current.PostTime.ToDateTime().ToLocalTime() + " " + current.Username + " : " + current.Msg;
                 BoardContent += "\n";
             }
         }
 
-        private void SendMessage()
+        private async Task SendMessageAsync()
         {
-            
-            var result = _client.PostMessage(new ChatServerProto.ChatMessage()
+
+            var response = await _client.PostMessageAsync(new ChatServerProto.ChatMessage()
+                {
+                    Msg = Message,
+                    UserID = UserId,
+                    PostTime = DateTime.Now.ToUniversalTime().ToTimestamp()
+                });
+
+            if (response.Code != 200)
             {
-                Msg = Message,
-                UserID = UserId
-            });
-            if (result.Code != 200)
+                throw new Exception("Received error code " + response.Code + " from server");
+            }
+            else
             {
-                throw new Exception("Received error code " + result.Code + " from server");
+                GetMessagesAsync();
             }
         }
     }

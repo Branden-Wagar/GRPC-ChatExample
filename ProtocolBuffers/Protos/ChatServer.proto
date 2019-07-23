@@ -1,6 +1,10 @@
 ﻿syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.helloworld";
+option java_outer_classname = "AccountLevelDataProto";
+option objc_class_prefix = "HLW";
 package ChatServerProto;
 
 
@@ -9,6 +13,7 @@ message ChatMessage
 	int32 userID = 1;
 	string msg = 2;
 	google.protobuf.Timestamp postTime = 3;
+	string Username = 4;
 }
 
 message ResponseCode

@@ -1,4 +1,5 @@
 ﻿using ChatServerProto;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
@@ -8,28 +9,30 @@ using System.Threading.Tasks;
 
 namespace ChatServer
 {
-    public class ChatServerSvc : ChatServerProto.ChatServerService.ChatServerServiceBase, IDisposable
+    public class ChatServerSvc : ChatServerProto.ChatServerService.ChatServerServiceBase
     {
-        private DataStore.MessageBoardDBContext _db;
         public ChatServerSvc()
         {
-            _db = new DataStore.MessageBoardDBContext();
         }
         
         public override Task<ResponseCode> PostMessage(ChatMessage msg, ServerCallContext context)
         {
             Console.WriteLine(msg.Msg);
-            _db.MessageBoard.Add(DBMessageConversion(msg));
-            _db.SaveChanges();
+            DataStore.MessageBoardDBContext db = new DataStore.MessageBoardDBContext();
+            db.MessageBoard.Add(DBMessageConversion(msg));
+            db.SaveChanges();
+            db.Dispose();
             return Task.FromResult(new ResponseCode() { Code = 200 });
         }
 
         public override async Task GetMessages(GetMessageRequest request, IServerStreamWriter<ChatMessage> responseStream, ServerCallContext context)
         {
-            foreach(var msg in _db.MessageBoard)
+            var db = new DataStore.MessageBoardDBContext();
+            foreach(var msg in db.MessageBoard)
             {
                 await responseStream.WriteAsync(DBMessageConversion(msg));
             }
+            db.Dispose();
         }
 
         private DataStore.Message DBMessageConversion(ChatMessage msg)
@@ -37,7 +40,8 @@ namespace ChatServer
             return new DataStore.Message()
             {
                 message = msg.Msg,
-                userID = msg.UserID
+                userID = msg.UserID,
+                MessageTimeStamp = msg.PostTime.ToDateTime()
             };
         }
 
@@ -46,13 +50,10 @@ namespace ChatServer
             return new ChatMessage()
             {
                 Msg = m.message,
-                UserID = m.userID
+                UserID = m.userID,
+                PostTime = m.MessageTimeStamp.ToUniversalTime().ToTimestamp()
             };
         }
 
-        public void Dispose()
-        {
-            _db.Dispose();
-        }
     }
 }

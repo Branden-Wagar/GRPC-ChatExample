@@ -69,7 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Protobuf Include="Protos\ChatServer.proto" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf">
@@ -97,6 +96,10 @@
     <ProjectReference Include="..\DataStore\DataStore.csproj">
       <Project>{1a83b9e8-a3c2-4f09-809d-3059edd3cc4d}</Project>
       <Name>DataStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProtocolBuffers\ProtocolBuffers.csproj">
+      <Project>{131927cf-f6e7-4cd4-a921-6e4393b88b8c}</Project>
+      <Name>ProtocolBuffers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
