@@ -1,10 +1,10 @@
 ﻿using Grpc.Core;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Telerik.Windows.Controls;
 
 namespace ChatServerClient
 {
@@ -42,7 +42,7 @@ namespace ChatServerClient
             {
                 if (_sendMessageCommand == null)
                 {
-                    _sendMessageCommand = new DelegateCommand(SendMessage);
+                    _sendMessageCommand = new DelegateCommand(new Action(() => SendMessage()));
                 }
                 return _sendMessageCommand;
             }
@@ -54,7 +54,7 @@ namespace ChatServerClient
             {
                 if (_getMessagesCommand == null)
                 {
-                    _getMessagesCommand = new DelegateCommand(GetMessagesAsync);
+                    _getMessagesCommand = new DelegateCommand(new Action(() => GetMessagesAsync()));
                 }
                 return _getMessagesCommand;
             }
@@ -65,7 +65,7 @@ namespace ChatServerClient
             _channel.ShutdownAsync();
         }
 
-        private async void GetMessagesAsync(object obj)
+        private async void GetMessagesAsync()
         {
             var messageStream = _client.GetMessages(new ChatServerProto.GetMessageRequest());
             BoardContent = "";
@@ -78,7 +78,7 @@ namespace ChatServerClient
             }
         }
 
-        private void SendMessage(object obj)
+        private void SendMessage()
         {
             
             var result = _client.PostMessage(new ChatServerProto.ChatMessage()
